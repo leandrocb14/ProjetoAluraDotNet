@@ -65,10 +65,10 @@ namespace CasaDoCodigo
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Pedido}/{action=Carrossel}/{codigo?}");
+                    template: "{controller=Pedido}/{action=BuscaDeProdutos}/{codigo?}");
             });
 
-            serviceProvider.GetService<IDataService>().InicializaDB().Wait();
+            //serviceProvider.GetService<IDataService>().InicializaDB().Wait();
         }
     }
 

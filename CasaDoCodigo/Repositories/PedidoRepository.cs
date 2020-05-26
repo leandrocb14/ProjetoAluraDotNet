@@ -35,9 +35,9 @@ namespace CasaDoCodigo.Repositories
 
         public async Task AddItem(string codigo)
         {
-            var produto = contexto.Set<Produto>()
+            var produto = await contexto.Set<Produto>()
                             .Where(p => p.Codigo == codigo)
-                            .SingleOrDefault();
+                            .SingleOrDefaultAsync();
 
             if (produto == null)
             {
@@ -46,16 +46,16 @@ namespace CasaDoCodigo.Repositories
 
             var pedido = await GetPedido();
 
-            var itemPedido = contexto.Set<ItemPedido>()
+            var itemPedido = await contexto.Set<ItemPedido>()
                                 .Where(i => i.Produto.Codigo == codigo
                                         && i.Pedido.Id == pedido.Id)
-                                .SingleOrDefault();
+                                .SingleOrDefaultAsync();
 
             if (itemPedido == null)
             {
                 itemPedido = new ItemPedido(pedido, produto, 1, produto.Preco);
-                contexto.Set<ItemPedido>()
-                    .Add(itemPedido);
+                await contexto.Set<ItemPedido>()
+                    .AddAsync(itemPedido);
 
                 await contexto.SaveChangesAsync();
             }
@@ -64,12 +64,12 @@ namespace CasaDoCodigo.Repositories
         public async Task<Pedido> GetPedido()
         {
             var pedidoId = GetPedidoId();
-            var pedido = dbSet
+            var pedido = await dbSet
                 .Include(p => p.Itens)
                     .ThenInclude(i => i.Produto)
                 .Include(p => p.Cadastro)
                 .Where(p => p.Id == pedidoId)
-                .SingleOrDefault();
+                .SingleOrDefaultAsync();
 
             if (pedido == null)
             {

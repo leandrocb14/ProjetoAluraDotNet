@@ -2,7 +2,6 @@
 using CasaDoCodigo.Models.ViewModels;
 using CasaDoCodigo.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,14 +13,16 @@ namespace CasaDoCodigo.Controllers
         private readonly IProdutoRepository produtoRepository;
         private readonly IPedidoRepository pedidoRepository;
         private readonly IItemPedidoRepository itemPedidoRepository;
+        private readonly ICategoriaRepository categoriaRepository;
 
         public PedidoController(IProdutoRepository produtoRepository,
             IPedidoRepository pedidoRepository,
-            IItemPedidoRepository itemPedidoRepository)
+            IItemPedidoRepository itemPedidoRepository, ICategoriaRepository categoriaRepository)
         {
             this.produtoRepository = produtoRepository;
             this.pedidoRepository = pedidoRepository;
             this.itemPedidoRepository = itemPedidoRepository;
+            this.categoriaRepository = categoriaRepository;
         }
 
         public IActionResult Carrossel()
@@ -39,7 +40,7 @@ namespace CasaDoCodigo.Controllers
             Pedido taskPedido = await pedidoRepository.GetPedido();
             List<ItemPedido> itens = taskPedido.Itens;
             CarrinhoViewModel carrinhoViewModel = new CarrinhoViewModel(itens);
-            return base.View(carrinhoViewModel);
+            return View(carrinhoViewModel);
         }
 
         public async Task<IActionResult> Cadastro()
@@ -63,6 +64,21 @@ namespace CasaDoCodigo.Controllers
                 return View(await pedidoRepository.UpdateCadastro(cadastro));
             }
             return RedirectToAction("Cadastro");
+        }
+
+        public async Task<IActionResult> BuscaDeProdutos(BuscaProdutosViewModel model)
+        {
+            IList<Produto> produtos = null;
+                 
+            if (string.IsNullOrEmpty(model.Pesquisa))
+                produtos = produtoRepository.GetProdutos();
+            else
+                produtos = produtoRepository.GetProdutos(model.Pesquisa);
+
+            if (produtos != null && produtos.Count > 0)
+                model.Categorias = produtos.Select(m => m.Categoria).GroupBy(m => m.Id).Select(m=> m.First()).ToList();                
+
+            return View(model);
         }
 
         [HttpPost]

@@ -143,7 +143,7 @@ namespace CasaDoCodigo.Models
 
         }
         public string Nome { get; set; }
-        public virtual Produto Produto { get; private set; }
+        public virtual List<Produto> Produtos { get; private set; }
         public Categoria(string nome)
         {
             this.Nome = nome;
