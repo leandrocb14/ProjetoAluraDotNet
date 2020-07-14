@@ -25,9 +25,9 @@ namespace CasaDoCodigo.Controllers
             this.categoriaRepository = categoriaRepository;
         }
 
-        public IActionResult Carrossel()
+        public async Task<IActionResult> Carrossel()
         {
-            return View(produtoRepository.GetProdutos());
+            return View(await produtoRepository.GetProdutos());
         }
 
         public async Task<IActionResult> Carrinho(string codigo)
@@ -71,9 +71,9 @@ namespace CasaDoCodigo.Controllers
             IList<Produto> produtos = null;
                  
             if (string.IsNullOrEmpty(model.Pesquisa))
-                produtos = produtoRepository.GetProdutos();
+                produtos = await produtoRepository.GetProdutos();
             else
-                produtos = produtoRepository.GetProdutos(model.Pesquisa);
+                produtos = await produtoRepository.GetProdutos(model.Pesquisa);
 
             if (produtos != null && produtos.Count > 0)
                 model.Categorias = produtos.Select(m => m.Categoria).GroupBy(m => m.Id).Select(m=> m.First()).ToList();                

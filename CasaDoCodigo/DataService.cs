@@ -26,7 +26,10 @@ namespace CasaDoCodigo
 
             List<Livro> livros = await GetLivros();
 
-            await produtoRepository.SaveProdutos(livros);
+            var existeProdutosCadastrados = await produtoRepository.ExisteAlgumProduto();
+
+            if (!existeProdutosCadastrados)
+                await produtoRepository.SaveProdutos(livros);
         }
 
         private static async Task<List<Livro>> GetLivros()
